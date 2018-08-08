@@ -44,7 +44,6 @@ public class SettingsMenu : MonoBehaviour
 
         float volume;
         audioMixer.GetFloat("volume", out volume);
-        volumeSlider.value = .2f;
     }
 
     public void SetResolutions(int resolutionIndex)

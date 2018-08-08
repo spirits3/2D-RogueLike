@@ -157,12 +157,12 @@ public class Player : MovingObject {
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
             GameManager.instance.GameOver();
+            gameOver = true;
         }
     }
 
     private void displayFood()
     {
-
         foodText.text = " Food: " + food;
     }
 }

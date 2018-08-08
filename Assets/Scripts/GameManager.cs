@@ -11,11 +11,10 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance = null;
     public BoardManager boardScript;    
 
-   
-    //a changer après les tests
     public int playerFoodPoints = 100;
     [HideInInspector] public bool playersTurn = true;
 
+    private static bool savedLevel = false;
     private Text levelText;
     private GameObject levelImage;
     private GameObject restartMenu;
@@ -24,6 +23,8 @@ public class GameManager : MonoBehaviour {
     private List<Enemy> enemies;
     private bool enemiesMoving;
     private bool doingSetUp;
+    private GameObject board;
+    private Player player;
 
 	// Use this for initialization
 	void Awake () {
@@ -34,55 +35,48 @@ public class GameManager : MonoBehaviour {
         {
             Destroy(gameObject);
         }
-
         DontDestroyOnLoad(gameObject);
+
         enemies = new List<Enemy>();
         boardScript = GetComponent<BoardManager>();
     }
 
     private void Start()
     {
-        if(PauseMenu.GameIsPaused)
-        {
-            pauseMenu.SetActive(true);
-        }
+        levelImage = GameObject.Find("LevelImage");
     }
 
     private void OnLevelWasLoaded(int index)    
     {
         if (SceneManager.GetActiveScene().name != "Menu" &&
             SceneManager.GetActiveScene().name != "Options" &&
-            PauseMenu.GameIsPaused == false)
+            !PauseMenu.GameIsPaused)
         {
             level++;
         }
 
+        if(!PauseMenu.GameIsPaused)
             InitGame();
-
-        if (level != 0)
-        {
-            restartMenu.SetActive(false);
-            pauseMenu.SetActive(false);
-        }
     }
-
 
     void InitGame()
     {
         doingSetUp = true;
         levelImage = GameObject.Find("LevelImage");
-        levelText = GameObject.Find("LevelText").GetComponent<Text>();
         restartMenu = GameObject.Find("RestartMenu");
         pauseMenu = GameObject.Find("PauseMenu");
+        levelText = GameObject.Find("LevelText").GetComponent<Text>();
         levelText.text = "Day " + level;
-        restartMenu.SetActive(false);
-        pauseMenu.SetActive(false);
-        levelImage.SetActive(true);
         Invoke("HideLevelImage", levelStartDelay);
 
         enemies.Clear();
         boardScript.SetUpScene(level);
+    }
 
+    void SaveMap()
+    {
+        board = GameObject.Find("Board");
+        DontDestroyOnLoad(board);
     }
 
     private void HideLevelImage()
@@ -95,23 +89,28 @@ public class GameManager : MonoBehaviour {
     {
         levelImage.SetActive(true);
         levelText.text = "After " + level + " days, you starved.";
-        restartMenu.SetActive(true);
     }
 
     public void RestartGame()
     {
         level = 0;
         Player.instance.food = 100;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("Game");
         SoundManager.instance.musicSource.Play();
     }
 
     // Update is called once per frame
     void Update () {
-        Debug.Log("gamePause: " + PauseMenu.GameIsPaused);
+
+        if (PauseMenu.GameIsPaused && !savedLevel)
+        {
+            SaveMap();
+            savedLevel = true;
+        }
+
         if (playersTurn || enemiesMoving || doingSetUp)
             return;
-        StartCoroutine(MoveEnemies());  
+        StartCoroutine(MoveEnemies());
     }
 
     public void AddEnemyToList(Enemy script)
