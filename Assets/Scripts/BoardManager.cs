@@ -1,9 +1,6 @@
-﻿using System.Collections;
 using System.Collections.Generic;
-using System;
 using Random = UnityEngine.Random;
 using UnityEngine;
-
 
 public class BoardManager : MonoBehaviour {
 
@@ -32,6 +29,7 @@ public class BoardManager : MonoBehaviour {
     public GameObject[] outerWallTiles;
 
     public Transform boardHolder;
+    public Transform itemsAndWalls;
     private List<Vector3> gridPositions = new List<Vector3>();
 
     public void InitialiseList()
@@ -49,6 +47,7 @@ public class BoardManager : MonoBehaviour {
     void boardSetUp()
     {
         boardHolder = new GameObject("Board").transform;
+        itemsAndWalls = new GameObject("ItemsAndWalls").transform;
         
         for(int x = -1; x < columns + 1; ++x)
         {   
@@ -84,7 +83,7 @@ public class BoardManager : MonoBehaviour {
             Vector3 randomPosition = RandomPosition();
             GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
             instance = Instantiate(tileChoice, randomPosition, Quaternion.identity);
-            instance.transform.SetParent(boardHolder);
+            instance.transform.SetParent(itemsAndWalls);
         }
     } 
     
@@ -99,6 +98,6 @@ public class BoardManager : MonoBehaviour {
         LayOutObjectAtRandom(enemyTiles, enemyCount, enemyCount);
         instance = Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
 
-        instance.transform.SetParent(boardHolder);  
+        instance.transform.SetParent(itemsAndWalls);  
     }
 }

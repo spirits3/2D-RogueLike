@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Player : MovingObject {
+public class Player : MovingObject
+{
 #if UNITY_STANDALONE || UNITY_WEBPLAYER
     public static Player instance;
     public int wallDamage = 1;
@@ -21,20 +20,22 @@ public class Player : MovingObject {
     public AudioClip gameOverSound;
 
     private Animator animator;
+    [HideInInspector]
     public int food;
 #else
     private Vector2 touchOrigin = -Vector2.one;
 #endif
 
-	// Use this for initialization
-	protected override void Start () {
+    // Use this for initialization
+    protected override void Start()
+    {
         instance = this;
         animator = GetComponent<Animator>();
         food = GameManager.instance.playerFoodPoints;
 
         displayFood();
         base.Start();
-	}
+    }
 
     private void OnDisable()
     {
@@ -42,16 +43,17 @@ public class Player : MovingObject {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
 
         if (!GameManager.instance.playersTurn) return;
 
-        int horizontal  = 0;
-        int vertical    = 0;
+        int horizontal = 0;
+        int vertical = 0;
 
 #if UNITY_STANDALONE || UNITY_WEBPLAYER
 
-        horizontal  = (int)Input.GetAxisRaw("Horizontal");
+        horizontal = (int)Input.GetAxisRaw("Horizontal");
         vertical = (int)Input.GetAxisRaw("Vertical");
 
         if (horizontal != 0)
@@ -83,9 +85,9 @@ public class Player : MovingObject {
 
         if (horizontal != 0 || vertical != 0)
             AttemptMove<Wall>(horizontal, vertical);
-	}
+    }
 
-    protected override void AttemptMove <T> (int xDir, int yDir)
+    protected override void AttemptMove<T>(int xDir, int yDir)
     {
         food--;
 
@@ -94,8 +96,8 @@ public class Player : MovingObject {
         base.AttemptMove<T>(xDir, yDir);
 
         RaycastHit2D hit;
-        
-        if(Move(xDir, yDir, out hit))
+
+        if (Move(xDir, yDir, out hit))
         {
             SoundManager.instance.RandomSizeSfx(moveSound1, moveSound2);
         }
@@ -105,14 +107,14 @@ public class Player : MovingObject {
         GameManager.instance.playersTurn = false;
     }
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Exit")
         {
             Invoke("Restart", restartLevelDelay);
             enabled = false;
         }
-        else if(other.tag == "Food")
+        else if (other.tag == "Food")
         {
             food += pointsPerFood;
             foodText.text = "+" + pointsPerFood + " Food: " + food;
@@ -128,7 +130,7 @@ public class Player : MovingObject {
         }
     }
 
-    protected override void OnCantMove <T> (T component)
+    protected override void OnCantMove<T>(T component)
     {
         Wall hitWall = component as Wall;
         hitWall.DamageWall(wallDamage);
@@ -147,17 +149,15 @@ public class Player : MovingObject {
         food -= loss;
         foodText.text = "-" + loss + " Food: " + food;
         CheckIfGameIsOver();
-         
     }
 
     private void CheckIfGameIsOver()
     {
-        if(food <= 0)
+        if (food <= 0)
         {
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
             GameManager.instance.GameOver();
-            gameOver = true;
         }
     }
 

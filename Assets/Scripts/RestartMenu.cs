@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
-public class RestartMenu : MonoBehaviour {
+public class RestartMenu : MonoBehaviour
+{
 
     public GameObject RestartMenuUi;
 
@@ -21,7 +19,7 @@ public class RestartMenu : MonoBehaviour {
     private void Update()
     {
         food = Player.instance.food;
-        if(food <= 0 && restartMenu)
+        if (food <= 0 && restartMenu)
         {
             RestartMenuUi.SetActive(true);
             restartMenu = false;
